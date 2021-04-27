@@ -1,12 +1,49 @@
 <template>
   <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
-    <router-view/>
+    <router-view
+      id="view"
+      :class="[{'collapsed' : collapsed}, {'no-sidebar' : !showSidebar}]"
+    />
+    <router-view
+      name="sidebar"
+      id="sidebar" 
+      @oncollapse="collapsed = $event"/>
   </div>
 </template>
+
+<script>
+export default {
+  data() {
+    return {
+      showSidebar: false,
+      collapsed: false
+    }
+  },
+  watch: {
+    '$route' (to) {
+      this.setMeta(to)
+      this.switchSidebar(to)
+    }
+  },
+  mounted() {
+    this.switchSidebar(this.$route)
+  },
+  methods: {
+    setMeta (to) {
+      if(to.meta.title){
+        document.title = to.meta.title
+      }
+    },
+    switchSidebar(to) {
+      if(to.meta.noSidebar) {
+        this.showSidebar = false
+      } else {
+        this.showSidebar = true
+      }
+    }
+  }
+}
+</script>
 
 <style>
 #app {
@@ -17,16 +54,16 @@
   color: #2c3e50;
 }
 
-#nav {
-  padding: 30px;
+#view {
+  padding-left: 350px;
+  transition: padding-left .3s;
+}
+#view.collapsed {
+  padding-left: 50px;
 }
 
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
+#view.no-sidebar {
+  padding-left: 0px;
 }
 
-#nav a.router-link-exact-active {
-  color: #42b983;
-}
 </style>
